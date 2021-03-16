@@ -4,36 +4,34 @@
    Built for KNI Project "Thingoo" https://github.com/ThingooKNI/
  **************************************************************/
 
-#ifndef esp8266Thingoo_h
-#define esp8266Thingoo_h
+#ifndef ThingooConnector_h
+#define ThingooConnector_h
 
 #include "Arduino.h"
 #include "WiFiClientSecure.h"
 
 #include <ArduinoJson.h>
 
-class esp8266Thingoo {
+class ThingooConnector {
 
 
     
 
   public:
     
-    esp8266Thingoo();
-    void _send_token_request();
+    ThingooConnector();
 
 
-    void client_credentials(String client_id, String secret_key);
+    void set_client_credentials(String client_id, String secret_key);
     void connect();
-    void _get_token();
     
     StaticJsonDocument<2048> doc;
     WiFiClientSecure httpsClient; 
     const char* fingerprint;
-    const char* HOST;
-    int httpsPort;  //HTTPS= 443 and HTTP = 80
+    const char* host;
+    int https_port;  //HTTPS= 443 and HTTP = 80
 
-    String END_POINT;
+    String token_endpoint;
     
 
     
@@ -42,9 +40,12 @@ class esp8266Thingoo {
 
 
   private:
-    String _SECRET_KEY;
-    String _CLIENT_ID;
-    String _ACCESS_TOKEN;
+    void _send_token_request();
+    void _get_token();
+
+    String _secret_key;
+    String _client_id;
+    String _access_token;
 };
 
 

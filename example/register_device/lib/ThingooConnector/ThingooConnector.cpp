@@ -4,7 +4,7 @@
    Built for KNI Project "Thingoo" https://github.com/ThingooKNI/
  **************************************************************/
 
-#include "esp8266Thingoo.h"
+#include "ThingooConnector.h"
 
 
 
@@ -17,33 +17,32 @@
 
 
 
-esp8266Thingoo::esp8266Thingoo() 
+ThingooConnector::ThingooConnector() 
   {
     
     fingerprint = "95 E1 00 D0 43 BC CE 7E 24 67 71 BC 43 77 15 23 78 74 FF C5";  
-    HOST = "dev.thingoo.xyz";
-    httpsPort = 443;//HTTPS= 443 and HTTP = 80
-    END_POINT = "/auth/realms/Thingoo/protocol/openid-connect/token";
+    host = "dev.thingoo.xyz";
+    https_port = 443;//HTTPS= 443 and HTTP = 80
+    token_endpoint = "/auth/realms/Thingoo/protocol/openid-connect/token";
 
   }
 
-void esp8266Thingoo::connect() {
+void ThingooConnector::connect() {
    
 
 
   httpsClient.setFingerprint(fingerprint);
-  httpsClient.setTimeout(15000);
   delay(1000);
   
   Serial.print("HTTPS Connecting");
-  int r=0; //retry counter
+  int retry_counter=0;
   
-  while((!httpsClient.connect(HOST, httpsPort)) && (r < 30)){
+  while((!httpsClient.connect(host, https_port)) && (retry_counter < 30)){
       delay(100);
       Serial.print(".");
-      r++;
+      retry_counter++;
   }
-  if(r==30) {
+  if(retry_counter==30) {
     Serial.println("Connection failed");
   }
   else {
@@ -52,28 +51,28 @@ void esp8266Thingoo::connect() {
   
 
   Serial.print("Requesting URL: ");
-  Serial.println(HOST);
+  Serial.println(host);
 
 }
 
 
-void esp8266Thingoo::client_credentials(String client_id, String secret_key)
+void ThingooConnector::set_client_credentials(String client_id, String secret_key)
 {
-  _SECRET_KEY = secret_key;
-  _CLIENT_ID = client_id;
+  _secret_key = secret_key;
+  _client_id = client_id;
 
 }
 
 
 
 
-void esp8266Thingoo::_send_token_request() {
+void ThingooConnector::_send_token_request() {
   
-  httpsClient.print(String("POST ") + END_POINT + " HTTP/1.1\r\n" +
-               "Host: " + HOST + "\r\n" +
+  httpsClient.print(String("POST ") + token_endpoint + " HTTP/1.1\r\n" +
+               "Host: " + host + "\r\n" +
                "Content-Type: application/x-www-form-urlencoded"+ "\r\n" +
                "Content-Length: 105" + "\r\n\r\n" +
-               "grant_type=client_credentials&client_id=" + _CLIENT_ID + "&client_secret=" + _SECRET_KEY + "\r\n" +
+               "grant_type=client_credentials&client_id=" + _client_id + "&client_secret=" + _secret_key + "\r\n" +
                "Connection: close\r\n\r\n");
 
   Serial.println("request sent");
@@ -83,7 +82,7 @@ void esp8266Thingoo::_send_token_request() {
 
 
 
-void esp8266Thingoo::_get_token() {
+void ThingooConnector::_get_token() {
   String line;
   while (httpsClient.connected()) {
     line = httpsClient.readStringUntil('\n');
@@ -126,7 +125,7 @@ void esp8266Thingoo::_get_token() {
   Serial.println("ACCESS TOKEN:  ");
   Serial.println(access_token);
   
-  _ACCESS_TOKEN = access_token;
+  _access_token = access_token;
   
   Serial.println("==========");
   Serial.println("closing connection");
