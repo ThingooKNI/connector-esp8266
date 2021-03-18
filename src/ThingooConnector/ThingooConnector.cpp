@@ -6,129 +6,76 @@
 
 #include "ThingooConnector.h"
 
-
-
-//OUTSIDE LIBRARIES:
 #include <Arduino.h>
-
-#include <WiFiClientSecure.h> 
+#include <WiFiClientSecure.h>
 #include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>
+#include <WiFiClientSecureBearSSL.h>
 
+ThingooConnector::ThingooConnector(const char* host)
+{
 
-
-ThingooConnector::ThingooConnector() 
-  {
-    
-    fingerprint = "95 E1 00 D0 43 BC CE 7E 24 67 71 BC 43 77 15 23 78 74 FF C5";  
-    host = "dev.thingoo.xyz";
-    https_port = 443;//HTTPS= 443 and HTTP = 80
-    token_endpoint = "/auth/realms/Thingoo/protocol/openid-connect/token";
-
-  }
-
-void ThingooConnector::connect() {
-   
-
-
-  httpsClient.setFingerprint(fingerprint);
-  delay(1000);
-  
-  Serial.print("HTTPS Connecting");
-  int retry_counter=0;
-  
-  while((!httpsClient.connect(host, https_port)) && (retry_counter < 30)){
-      delay(100);
-      Serial.print(".");
-      retry_counter++;
-  }
-  if(retry_counter==30) {
-    Serial.println("Connection failed");
-  }
-  else {
-    Serial.println("Connected to web");
-  }
-  
-
-  Serial.print("Requesting URL: ");
-  Serial.println(host);
-
+    https_port = 443; //HTTPS= 443
+    register_endpoint = "/auth/realms/Thingoo/protocol/openid-connect/token";
+    readings = "/readings";
+    devices = "/devices";
+    _host = host;
 }
-
 
 void ThingooConnector::set_client_credentials(String client_id, String secret_key)
 {
-  _secret_key = secret_key;
-  _client_id = client_id;
 
+    _client_id = client_id;
+    _secret_key = secret_key;
 }
 
-
-
-
-void ThingooConnector::_send_token_request() {
-  
-  httpsClient.print(String("POST ") + token_endpoint + " HTTP/1.1\r\n" +
-               "Host: " + host + "\r\n" +
-               "Content-Type: application/x-www-form-urlencoded"+ "\r\n" +
-               "Content-Length: 105" + "\r\n\r\n" +
-               "grant_type=client_credentials&client_id=" + _client_id + "&client_secret=" + _secret_key + "\r\n" +
-               "Connection: close\r\n\r\n");
-
-  Serial.println("request sent");
-
-
+void ThingooConnector::set_fingerprint(const char* fingerprint)
+{
+    _fingerprint = fingerprint;
 }
 
+void ThingooConnector::_get_token()
+{
+    
+    std::unique_ptr<BearSSL::WiFiClientSecure> client(new BearSSL::WiFiClientSecure);
+    Serial.println("Sending HTTPS request");
+    client->setFingerprint(_fingerprint);
+    String token_endpoint = "https://" + (String)_host + register_endpoint;
+    http.begin(*client, token_endpoint);
+    http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+    String http_request_data = "grant_type=client_credentials&client_id=" + _client_id + "&client_secret=" + _secret_key;
 
+    // Send HTTP POST request
+    int http_response_code = http.POST(http_request_data);
 
-void ThingooConnector::_get_token() {
-  String line;
-  while (httpsClient.connected()) {
-    line = httpsClient.readStringUntil('\n');
-    if (line == "\r") {
-      Serial.println("headers received");
-      break;
+    if (http_response_code > 0) {
+        // HTTP header has been send and Server response header has been handled
+        Serial.printf("[HTTP] POST... code: %d\n", http_response_code);
+
+        // file found at server
+        if (http_response_code == 200) {
+            String payload = http.getString();
+            
+            DeserializationError error = deserializeJson(doc, payload);
+            if (error) {
+                Serial.print(F("deserializeJson() failed: "));
+                Serial.println(error.f_str());
+                return;
+            }
+            
+            
+            const char* access_token = doc["access_token"];
+            Serial.println(access_token);
+        }
     }
-  }
+    else {
+        Serial.printf("[HTTP] POST... failed, error: %s\n", http.errorToString(http_response_code).c_str());
+    }
 
-  Serial.println("reply was:");
-  Serial.println("==========");
-  
-  
-//==========================================================
-//              FIX getting answer from server !!!   !!    =
-//==========================================================
+    http.end();
+}
 
-  for (int i = 0; i<2; i++){        
-    line = httpsClient.readStringUntil('\n'); //Read only line with JSON
-  }
-  
-  
-  
-  
-  DeserializationError error = deserializeJson(doc, line);
-  if (error) {
-    Serial.print(F("deserializeJson() failed: "));
-    Serial.println(error.f_str());
-    Serial.println("BLADDDDDD");
+void ThingooConnector::connect()
+{
     return;
-  }
-
-  const char* access_token = doc["access_token"];
-  int expires_in = doc["expires_in"]; // 300
-  int refresh_expires_in = doc["refresh_expires_in"]; // 0
-  // const char* token_type = doc["token_type"]; // "Bearer"
-  // int not_before_policy = doc["not-before-policy"]; // 0
-  // const char* scope = doc["scope"]; // "email profile"
-  
-  Serial.println("ACCESS TOKEN:  ");
-  Serial.println(access_token);
-  
-  _access_token = access_token;
-  
-  Serial.println("==========");
-  Serial.println("closing connection");
-
-
 }
