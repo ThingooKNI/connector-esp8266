@@ -15,6 +15,9 @@
 #include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>
 
+#include <WiFiManager.h>
+
+#include <WiFiClientSecureBearSSL.h>
 
 
 ThingooConnector::ThingooConnector() 
