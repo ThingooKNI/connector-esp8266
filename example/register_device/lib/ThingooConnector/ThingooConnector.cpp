@@ -1,5 +1,5 @@
 /***************************************************************
-   esp8266Thingoo is a library for the ESP8266/Arduino platform
+   ThingooConnector is a library for the ESP8266/Arduino platform
    to communicate with Thingoo API
    Built for KNI Project "Thingoo" https://github.com/ThingooKNI/
  **************************************************************/
@@ -15,7 +15,6 @@
 ThingooConnector::ThingooConnector(const char* host)
 {
 
-    https_port = 443; //HTTPS= 443
     register_endpoint = "/auth/realms/Thingoo/protocol/openid-connect/token";
     readings = "/readings";
     devices = "/devices";
@@ -34,9 +33,9 @@ void ThingooConnector::set_fingerprint(const char* fingerprint)
     _fingerprint = fingerprint;
 }
 
-void ThingooConnector::_get_token()
+const char* ThingooConnector::_get_token()
 {
-    
+
     std::unique_ptr<BearSSL::WiFiClientSecure> client(new BearSSL::WiFiClientSecure);
     Serial.println("Sending HTTPS request");
     client->setFingerprint(_fingerprint);
@@ -55,17 +54,16 @@ void ThingooConnector::_get_token()
         // file found at server
         if (http_response_code == 200) {
             String payload = http.getString();
-            
+
             DeserializationError error = deserializeJson(doc, payload);
             if (error) {
                 Serial.print(F("deserializeJson() failed: "));
                 Serial.println(error.f_str());
-                return;
+                
             }
-            
-            
+
             const char* access_token = doc["access_token"];
-            Serial.println(access_token);
+            return access_token;
         }
     }
     else {

@@ -34,7 +34,7 @@ void setup()
 
     connector.set_client_credentials("thingoo-device", "101ed902-3a95-48b1-b8c6-9a4648151050");
     connector.set_fingerprint(fingerprint);
-    connector._get_token();
+    Serial.println(connector._get_token());
 }
 
 //=======================================================================
