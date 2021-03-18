@@ -6,17 +6,11 @@
 
 #include "ThingooConnector.h"
 
-
-
-//OUTSIDE LIBRARIES:
 #include <Arduino.h>
-
 #include <WiFiClientSecure.h> 
 #include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>
-
 #include <WiFiManager.h>
-
 #include <WiFiClientSecureBearSSL.h>
 
 
@@ -64,6 +58,11 @@ void ThingooConnector::set_client_credentials(String client_id, String secret_ke
   _secret_key = secret_key;
   _client_id = client_id;
 
+}
+
+void ThingooConnector::set_fingerprint(uint8_t fingerprint)
+{
+  _fingerprint = fingerprint;
 }
 
 
