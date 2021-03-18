@@ -59,7 +59,6 @@ const char* ThingooConnector::_get_token()
             if (error) {
                 Serial.print(F("deserializeJson() failed: "));
                 Serial.println(error.f_str());
-                
             }
 
             const char* access_token = doc["access_token"];
