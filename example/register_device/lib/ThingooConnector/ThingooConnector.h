@@ -25,7 +25,7 @@ public:
 
     HTTPClient http;
 
-    DynamicJsonDocument doc();
+    StaticJsonDocument<2048> doc;
     int https_port; //HTTPS=443
     const char* host;
     String register_endpoint;

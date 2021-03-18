@@ -36,17 +36,12 @@ void ThingooConnector::set_fingerprint(const char* fingerprint)
 
 void ThingooConnector::_get_token()
 {
-    /*
-        Get OAuth access token
-        :return: :class:`Token`
-        :raises: :class:`RetrieveTokenException`
-        */
+    
     std::unique_ptr<BearSSL::WiFiClientSecure> client(new BearSSL::WiFiClientSecure);
     Serial.println("Sending HTTPS request");
     client->setFingerprint(_fingerprint);
     String token_endpoint = "https://" + (String)_host + register_endpoint;
     http.begin(*client, token_endpoint);
-    //http.addHeader("Content-Type", "application/json");
     http.addHeader("Content-Type", "application/x-www-form-urlencoded");
     String http_request_data = "grant_type=client_credentials&client_id=" + _client_id + "&client_secret=" + _secret_key;
 
@@ -58,11 +53,19 @@ void ThingooConnector::_get_token()
         Serial.printf("[HTTP] POST... code: %d\n", http_response_code);
 
         // file found at server
-        if (http_response_code == HTTP_CODE_OK) {
-            const String& payload = http.getString();
-            Serial.println("received payload:\n<<");
-            Serial.println(payload);
-            Serial.println(">>");
+        if (http_response_code == 200) {
+            String payload = http.getString();
+            
+            DeserializationError error = deserializeJson(doc, payload);
+            if (error) {
+                Serial.print(F("deserializeJson() failed: "));
+                Serial.println(error.f_str());
+                return;
+            }
+            
+            
+            const char* access_token = doc["access_token"];
+            Serial.println(access_token);
         }
     }
     else {

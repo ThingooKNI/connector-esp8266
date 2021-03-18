@@ -13,11 +13,13 @@ const char* fingerprint = "95 E1 00 D0 43 BC CE 7E 24 67 71 BC 43 77 15 23 78 74
 const char* host = "dev.thingoo.xyz";
 const char* SECRET_KEY = "101ed902-3a95-48b1-b8c6-9a4648151050";
 
+
+
+ThingooConnector connector(host);
+
 //=========================================================
 //                    Setup                               =
 //=========================================================
-
-ThingooConnector connector(host);
 
 void setup()
 {
@@ -38,6 +40,7 @@ void setup()
 //=======================================================================
 //                    Main Loop
 //=======================================================================
+
 void loop()
 {
 }
