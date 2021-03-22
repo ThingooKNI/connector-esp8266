@@ -7,7 +7,7 @@
 #include <WiFiManager.h>
 #include <WiFiClientSecureBearSSL.h>
 
-//SHA1 finger print of certificate
+//SHA1 fingerprint of certificate
 const char* fingerprint = "95 E1 00 D0 43 BC CE 7E 24 67 71 BC 43 77 15 23 78 74 FF C5";
 
 const char* host = "dev.thingoo.xyz";

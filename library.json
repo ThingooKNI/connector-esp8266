@@ -1,0 +1,28 @@
+{ 
+ "name": "ThingooConnector",
+  "version": "0.0.1",
+  "description": "ESP8266 library for devices to connect to Thingoo platform",
+  "keywords": "thingoo, iot, connector",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/ThingooKNI/connector-esp8266.git"
+  },
+  "authors":
+  [
+    {
+      "name": "KNI",
+      "email": "dknuszkiewicz@gmail.com",
+      "url": "https://www.github.com/ninjavaz"
+    }
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/ThingooKNI/connector-esp8266",
+  "dependencies": {
+    "bblanchon/ArduinoJson": "6.17.3",
+    "tzapu/WiFiManager": "V0.16",
+    "esp8266/Arduino": "2.7.4"
+  },
+  "frameworks": "arduino",
+  "platforms": "espressif8266"
+}
