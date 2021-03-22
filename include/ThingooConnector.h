@@ -7,36 +7,33 @@
 #ifndef ThingooConnector_h
 #define ThingooConnector_h
 
-#include <Arduino.h>
-#include <WiFiClientSecure.h>
 #include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>
 #include <WiFiClientSecureBearSSL.h>
 
-class ThingooConnector {
+class ThingooConnector 
+{
+        const char* host;
+    public:
+        ThingooConnector(const char* host);
+        void set_client_credentials(String client_id, String secret_key);
+        void set_ssl_certificate_fingerprint(const char* fingerprint);
+        void connect();
 
-public:
-    ThingooConnector(const char* host);
+        HTTPClient http;
+        StaticJsonDocument<2048> doc;
 
-    void set_client_credentials(String client_id, String secret_key);
-    void set_fingerprint(const char* fingerprint);
-    void connect();
+        String register_endpoint = "/auth/realms/Thingoo/protocol/openid-connect/token";
+        String readings = "/readings";
+        String devices = "/devices";
+        const char* _get_token();
 
-    HTTPClient http;
-    StaticJsonDocument<2048> doc;
-
-    const char* host;
-    String register_endpoint;
-    String readings;
-    String devices;
-    const char* _get_token();
-
-private:
-    const char* _host;
-    const char* _fingerprint;
-    String _secret_key;
-    String _client_id;
-    String _access_token;
+    private:
+        String _host;
+        const char* _fingerprint;
+        String _secret_key;
+        String _client_id;
+        String _access_token;
 };
 
 #endif
