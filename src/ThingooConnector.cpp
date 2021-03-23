@@ -10,24 +10,6 @@ ThingooConnector::ThingooConnector(const char *host)
 	_host = _clean_end_point(String(host));
 }
 
-String ThingooConnector::_clean_end_point(String endpoint)
-{
-	endpoint.trim();
-	endpoint.replace("https://", "");
-	endpoint.replace("http://", "");
-	
-	if (endpoint.charAt(endpoint.length()-1) == '/')
-	{
-		endpoint.setCharAt(endpoint.length()-1, ' ');
-		endpoint.trim();
-	}
-	
-	return endpoint;
-}
-
-
-
-
 void ThingooConnector::set_client_credentials(String client_id, String secret_key)
 {
 	_client_id = client_id;
@@ -39,10 +21,9 @@ void ThingooConnector::set_ssl_certificate_fingerprint(const char* fingerprint)
 	_fingerprint = fingerprint;
 }
 
-const char *ThingooConnector::_get_token()
+String ThingooConnector::_get_token()
 {
 	std::unique_ptr<BearSSL::WiFiClientSecure > client(new BearSSL::WiFiClientSecure);
-	Serial.println("Sending HTTPS request");
 	client->setFingerprint(_fingerprint);
 	String token_endpoint = "https://" + (String) _host + register_endpoint;
 	http.begin(*client, token_endpoint);
@@ -62,18 +43,39 @@ const char *ThingooConnector::_get_token()
 			Serial.println(error.f_str());
 		}
 
-		const char *access_token = doc["access_token"];
+		String access_token = doc["access_token"];
 		return access_token;
 	}
 	else
 	{
-		Serial.printf("[HTTP] POST... failed, error: %s\n", http.errorToString(http_response_code).c_str());
-		const char *access_token = NULL;
-		return access_token;
-
-		////////////////////////////What to return, when post request was failed??? Some exception? FIXXXXX
+		// Serial.printf("[HTTP] POST... failed, error: %s\n", http.errorToString(http_response_code).c_str());
+		String exception = http.errorToString(http_response_code);
+		Serial.println(exception); 
+		
+		// It doesnt work, nothing printing, nothing returning, implemented well as library says - 
+		//similar issue:    https://github.com/esp8266/Arduino/issues/5137
+		//I could 
+		//1)return just error number 
+		//2) make function to handle exceptions
+		
+		return exception;
 	}
 	http.end();
+}
+
+String ThingooConnector::_clean_end_point(String endpoint)
+{
+	endpoint.trim();
+	endpoint.replace("https://", "");
+	endpoint.replace("http://", "");
+	
+	if (endpoint.charAt(endpoint.length()-1) == '/')
+	{
+		endpoint.setCharAt(endpoint.length()-1, ' ');
+		endpoint.trim();
+	}
+	
+	return endpoint;
 }
 
 void ThingooConnector::connect()

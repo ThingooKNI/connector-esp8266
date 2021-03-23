@@ -26,7 +26,7 @@ class ThingooConnector
         String register_endpoint = "/auth/realms/Thingoo/protocol/openid-connect/token";
         String readings = "/readings";
         String devices = "/devices";
-        const char* _get_token();
+        String _get_token();
 
     private:
         String _clean_end_point(String endpoint);
