@@ -21,6 +21,12 @@ void ThingooConnector::set_ssl_certificate_fingerprint(const char* fingerprint)
 	_fingerprint = fingerprint;
 }
 
+void ThingooConnector::connect()
+{
+	String token = _get_token();
+	Serial.println(token);
+}
+
 String ThingooConnector::_get_token()
 {
 	std::unique_ptr<BearSSL::WiFiClientSecure > client(new BearSSL::WiFiClientSecure);
@@ -78,7 +84,3 @@ String ThingooConnector::_clean_end_point(String endpoint)
 	return endpoint;
 }
 
-void ThingooConnector::connect()
-{
-	return;
-}
