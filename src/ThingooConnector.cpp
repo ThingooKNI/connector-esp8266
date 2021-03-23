@@ -55,8 +55,7 @@ String ThingooConnector::_get_token()
 	else
 	{
 		String error_message = "[HTTP] POST... failed, error: " + String(http_response_code);
-		return error_message;
-		
+		return error_message;	
 	}
 	http.end();
 }
