@@ -29,6 +29,8 @@ class ThingooConnector
         const char* _get_token();
 
     private:
+        String _clean_end_point(String endpoint);
+
         String _host;
         const char* _fingerprint;
         String _secret_key;

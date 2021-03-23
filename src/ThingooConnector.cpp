@@ -7,9 +7,26 @@
 
 ThingooConnector::ThingooConnector(const char *host)
 {
-	_host = String(host);
-	_host.replace("/", "");
+	_host = _clean_end_point(String(host));
 }
+
+String ThingooConnector::_clean_end_point(String endpoint)
+{
+	endpoint.trim();
+	endpoint.replace("https://", "");
+	endpoint.replace("http://", "");
+	
+	if (endpoint.charAt(endpoint.length()-1) == '/')
+	{
+		endpoint.setCharAt(endpoint.length()-1, ' ');
+		endpoint.trim();
+	}
+	
+	return endpoint;
+}
+
+
+
 
 void ThingooConnector::set_client_credentials(String client_id, String secret_key)
 {
@@ -17,7 +34,7 @@ void ThingooConnector::set_client_credentials(String client_id, String secret_ke
 	_secret_key = secret_key;
 }
 
-void ThingooConnector::set_ssl_certificate_fingerprint(const char *fingerprint)
+void ThingooConnector::set_ssl_certificate_fingerprint(const char* fingerprint)
 {
 	_fingerprint = fingerprint;
 }
