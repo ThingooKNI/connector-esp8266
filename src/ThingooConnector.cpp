@@ -54,17 +54,15 @@ String ThingooConnector::_get_token()
 	}
 	else
 	{
-		// Serial.printf("[HTTP] POST... failed, error: %s\n", http.errorToString(http_response_code).c_str());
-		String exception = http.errorToString(http_response_code);
-		Serial.println(exception); 
+		String error_message = "[HTTP] POST... failed, error: " + String(http_response_code);
 		
 		// It doesnt work, nothing printing, nothing returning, implemented well as library says - 
 		//similar issue:    https://github.com/esp8266/Arduino/issues/5137
 		//I could 
 		//1)return just error number 
 		//2) make function to handle exceptions
+		return error_message;
 		
-		return exception;
 	}
 	http.end();
 }
