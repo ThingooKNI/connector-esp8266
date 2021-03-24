@@ -8,12 +8,14 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v2
     - name: Lint Code Base
       uses: github/super-linter@v3
       env:
         VALIDATE_ALL_CODEBASE: true
         DEFAULT_BRANCH: develop
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
 
   build:
 
@@ -21,7 +23,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.9]
-        platformio-ci-src: [example/main.cpp]
+        platformio-ci-src: [examples/main.cpp]
 
     steps:
     - uses: actions/checkout@v2
@@ -34,6 +36,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install --upgrade platformio
     - name: Run PlatformIO
-      run: pio ci --board=nodemcu --board=nodemcuv2 --board=d1 --board=d1_mini
+      run: |
+        pio lib -g install 64  # ArduinoJSON
+        pio lib -g install 567 # WiFiManager
+        pio ci --lib="." --board=nodemcu --board=nodemcuv2 --board=d1 --board=d1_mini
       env:
         PLATFORMIO_CI_SRC: ${{ matrix.platformio-ci-src }}
