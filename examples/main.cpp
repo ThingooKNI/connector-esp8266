@@ -8,7 +8,7 @@
 
 const char* fingerprint = "XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX XX";
 const char* device_id = "device_1";
-const char* host = "website_address_without_https_or_http"; //example: google.com
+const char* host = "website_address_without_https_or_http/"; //example: google.com
 const char* secret_key = "some_secret_letters";
 
 ThingooConnector connector(host);

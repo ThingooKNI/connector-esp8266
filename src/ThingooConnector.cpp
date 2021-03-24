@@ -4,6 +4,7 @@
    Built for KNI Project "Thingoo" https://github.com/ThingooKNI/
  **************************************************************/
 #include "ThingooConnector.h"
+#include <exception>
 
 ThingooConnector::ThingooConnector(const char *host)
 {
@@ -21,15 +22,7 @@ void ThingooConnector::set_ssl_certificate_fingerprint(const char* fingerprint)
 	_fingerprint = fingerprint;
 }
 
-struct AccessTokenRetrievalException : public std::exception
-{
-	const char * what () const throw ()
-    {
-    	return "Some Exception";
-    }
-};
-
-String ThingooConnector::connect()
+void ThingooConnector::connect()
 {
 	try
 	{
@@ -38,7 +31,7 @@ String ThingooConnector::connect()
 	catch (AccessTokenRetrievalException e)
 	{
 		Serial.println("Exception was caught");
-		Serial.println(e.what());
+		// Serial.println(e.what());
 	}	
 }
 
@@ -70,8 +63,8 @@ String ThingooConnector::_get_token()
 	else
 	{
 		//String error_message = "[HTTP] POST... failed, error: " + String(http_response_code);
-		// return error_message;	
-		throw AccessTokenRetrievalException();
+		// return error_message;
+		throw AccessTokenRetrievalException(); ///////////////FIX NEEDED
 	}
 	http.end();
 }
