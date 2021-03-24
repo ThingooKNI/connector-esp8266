@@ -18,7 +18,7 @@ class ThingooConnector
         ThingooConnector(const char* host);
         void set_client_credentials(String client_id, String secret_key);
         void set_ssl_certificate_fingerprint(const char* fingerprint);
-        void connect();
+        String connect();
 
         HTTPClient http;
         StaticJsonDocument<2048> doc;

@@ -21,10 +21,25 @@ void ThingooConnector::set_ssl_certificate_fingerprint(const char* fingerprint)
 	_fingerprint = fingerprint;
 }
 
-void ThingooConnector::connect()
+struct AccessTokenRetrievalException : public std::exception
 {
-	String token = _get_token();
-	Serial.println(token);
+	const char * what () const throw ()
+    {
+    	return "Some Exception";
+    }
+};
+
+String ThingooConnector::connect()
+{
+	try
+	{
+		String token = _get_token();
+	}
+	catch (AccessTokenRetrievalException e)
+	{
+		Serial.println("Exception was caught");
+		Serial.println(e.what());
+	}	
 }
 
 String ThingooConnector::_get_token()
@@ -54,8 +69,9 @@ String ThingooConnector::_get_token()
 	}
 	else
 	{
-		String error_message = "[HTTP] POST... failed, error: " + String(http_response_code);
-		return error_message;	
+		//String error_message = "[HTTP] POST... failed, error: " + String(http_response_code);
+		// return error_message;	
+		throw AccessTokenRetrievalException();
 	}
 	http.end();
 }
@@ -74,4 +90,5 @@ String ThingooConnector::_clean_end_point(String endpoint)
 	
 	return endpoint;
 }
+
 
