@@ -31,7 +31,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.9]
-        platformio-ci-src: [example/main.cpp]
+        platformio-ci-src: [examples/main.cpp]
 
     steps:
     - uses: actions/checkout@v2
