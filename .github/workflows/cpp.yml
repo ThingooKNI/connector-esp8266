@@ -9,15 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.9
-    - name: Install cpplint
-      run: |
-        python -m pip install --upgrade pip
-        pip install --upgrade cpplint
-        cpplint src/*.cpp include/*.h
     - name: Lint Code Base
       uses: github/super-linter@v3
       env:
